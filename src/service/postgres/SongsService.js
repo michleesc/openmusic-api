@@ -9,16 +9,17 @@ class SongsService {
   }
 
   async addSong({
-    title, year, performer, genre, duration,
+    title, year, genre, performer, duration,
   }) {
-    const id = nanoid(16);
+    const id = `song-${nanoid(16)}`;
 
     const query = {
       text: 'INSERT INTO songs VALUES($1, $2, $3, $4, $5, $6) RETURNING id',
-      values: [id, title, year, performer, genre, duration],
+      values: [id, title, year, genre, performer, duration],
     };
 
     const result = await this._pool.query(query);
+
     if (!result.rows[0].id) {
       throw new InvariantError('lagu gagal ditambahkan');
     }
@@ -40,15 +41,15 @@ class SongsService {
     if (!result.rows.length) {
       throw new NotFoundError('song tidak ditemukan');
     }
-
-    return result.rows;
+    console.log(result);
+    return result.rows[0];
   }
 
   async editSongById(id, {
     title, year, performer, genre, duration,
   }) {
     const query = {
-      text: 'UPDATE songs SET title = $1, year = $2, performer = $3, genre = $4, duration = $5 WHERE id = $8 RETURNING id',
+      text: 'UPDATE songs SET title = $1, year = $2, performer = $3, genre = $4, duration = $5 WHERE id = $6 RETURNING id',
       values: [title, year, performer, genre, duration, id],
     };
 

@@ -23,13 +23,8 @@ exports.up = (pgm) => {
       duration: {
         type: 'int',
       },
-      inserted_at: {
-        type: 'TEXT',
-        notNull: true,
-      },
-      updated_at: {
-        type: 'TEXT',
-        notNull: true,
+      albumId: {
+        type: 'VARCHAR(50)',
       },
     });
   };
