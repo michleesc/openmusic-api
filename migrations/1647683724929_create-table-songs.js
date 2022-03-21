@@ -10,21 +10,25 @@ exports.up = (pgm) => {
         notNull: true,
       },
       year: {
-        type: 'int',
-        notNull: true,
-      },
-      performer: {
-        type: 'varchar(100)',
+        type: 'INTEGER',
         notNull: true,
       },
       genre: {
-        type: 'varchar(100)',
+        type: 'TEXT',
+        notNull: false,
+      },
+      performer: {
+        type: 'TEXT',
+        notNull: true,
       },
       duration: {
-        type: 'int',
+        type: 'INTEGER',
+        notNull: false,
       },
       albumId: {
-        type: 'VARCHAR(50)',
+        type: 'TEXT',
+        references: 'albums',
+        onDelete: 'cascade',
       },
     });
   };

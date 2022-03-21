@@ -28,7 +28,7 @@ class SongsService {
   }
 
   async getSongs() {
-    const result = await this._pool.query('SELECT * FROM songs');
+    const result = await this._pool.query('SELECT id, title, performer FROM songs');
     return result.rows;
   }
 
@@ -41,16 +41,15 @@ class SongsService {
     if (!result.rows.length) {
       throw new NotFoundError('song tidak ditemukan');
     }
-    console.log(result);
     return result.rows[0];
   }
 
   async editSongById(id, {
-    title, year, performer, genre, duration,
+    title, year, genre, performer, duration,
   }) {
     const query = {
-      text: 'UPDATE songs SET title = $1, year = $2, performer = $3, genre = $4, duration = $5 WHERE id = $6 RETURNING id',
-      values: [title, year, performer, genre, duration, id],
+      text: 'UPDATE songs SET title = $1, year = $2, genre = $3, performer = $4, duration = $5 WHERE id = $6 RETURNING id',
+      values: [title, year, genre, performer, duration, id],
     };
 
     const result = await this._pool.query(query);

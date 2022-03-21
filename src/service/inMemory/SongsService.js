@@ -7,7 +7,14 @@ class SongsService {
         this._songs = [];
     }
 
-    addSong({ title, year, genre, performer, duration, albumId }) {
+    addSong({ 
+        title, 
+        year, 
+        genre, 
+        performer, 
+        duration, 
+        albumId,
+    }) {
         const id = `song-${nanoid(16)}`;
 
         const newSongs = {
@@ -39,7 +46,7 @@ class SongsService {
     }
 
     editSongById(id, { 
-        title, year, genre, performer, duration, albumId 
+        title, year, genre, performer, duration, albumId,
     }) {
         const index = this._songs.findIndex((song) => song.id === id);
         
