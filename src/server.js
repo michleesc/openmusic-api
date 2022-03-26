@@ -1,28 +1,24 @@
-// mengimpor dotenv dan menjalankan konfigurasinya 
 require('dotenv').config();
 
-// hapi server
 const Hapi = require('@hapi/hapi');
-
-// jwt
 const Jwt = require('@hapi/jwt');
 
-// albums
-const AlbumsService = require('./service/postgres/AlbumsService');
+// Albums
 const albums = require('./api/albums');
+const AlbumsService = require('./service/postgres/AlbumsService');
 const AlbumsValidator = require('./validator/albums');
 
-// songs
-const SongsService = require('./service/postgres/SongsService');
+// Songs
 const songs = require('./api/songs');
+const SongsService = require('./service/postgres/SongsService');
 const SongsValidator = require('./validator/songs');
 
-// users
-const UsersService = require('./service/postgres/UsersService');
+// Users
 const users = require('./api/users');
+const UsersService = require('./service/postgres/UsersService');
 const UsersValidator = require('./validator/users');
 
-// authentications
+// Authentications
 const authentications = require('./api/authentications');
 const AuthenticationsService = require('./service/postgres/Authentications');
 const TokenManager = require('./tokenize/TokenManager');
@@ -33,30 +29,35 @@ const playlists = require('./api/playlists');
 const PlaylistsService = require('./service/postgres/PlaylistsService');
 const PlaylistsValidator = require('./validator/playlists');
 
+// PlaylistSongs
+const playlistSongs = require('./api/playlistsongs');
+const PlaylistSongsService = require('./service/postgres/PlaylistSongsService');
+const PlaylistSongsValidator = require('./validator/playlistsong');
+
 const init = async () => {
-    const albumsService = new AlbumsService();
-    const songsService = new SongsService();
-    const usersService = new UsersService();
-    const authenticationsService = new AuthenticationsService();
-    const playlistsService = new PlaylistsService();
+  const albumsService = new AlbumsService();
+  const songsService = new SongsService();
+  const usersService = new UsersService();
+  const playlistsService = new PlaylistsService();
+  const playlistSongsService = new PlaylistSongsService();
+  const authenticationsService = new AuthenticationsService();
 
-    const server = Hapi.server({
-        port: process.env.PORT,
-        host: process.env.HOST,
-        routes: {
-            cors: {
-                origin: ['*'],
-            },
-        },
-    });
+  const server = Hapi.server({
+    port: process.env.PORT,
+    host: process.env.HOST,
+    routes: {
+      cors: {
+        origin: ['*'],
+      },
+    },
+  });
 
-    // registrasi plugin eksternal
   await server.register([
     {
       plugin: Jwt,
     },
   ]);
- 
+
   // mendefinisikan strategy autentikasi jwt
   server.auth.strategy('openmusic_jwt', 'jwt', {
     keys: process.env.ACCESS_TOKEN_KEY,
@@ -74,48 +75,56 @@ const init = async () => {
     }),
   });
 
-    await server.register([
-        {
-          plugin: songs,
-          options: {
-            service: songsService,
-            validator: SongsValidator,
-          },
-        },
-        {
-          plugin: albums,
-          options: {
-            service: albumsService,
-            validator: AlbumsValidator,
-          },
-        },
-        {
-          plugin: users,
-          options: {
-            service: usersService,
-            validator: UsersValidator,
-          },
-        },
-        {
-          plugin: authentications,
-          options: {
-            authenticationsService,
-            usersService,
-            tokenManager: TokenManager,
-            validator: AuthenticationsValidator,
-          },
-        },
-        {
-          plugin: playlists,
-          options: {
-            service: playlistsService,
-            validator: PlaylistsValidator,
-          },
-        },
-      ]);
+  await server.register([
+    {
+      plugin: albums,
+      options: {
+        service: albumsService,
+        validator: AlbumsValidator,
+      },
+    },
+    {
+      plugin: songs,
+      options: {
+        service: songsService,
+        validator: SongsValidator,
+      },
+    },
+    {
+      plugin: users,
+      options: {
+        service: usersService,
+        validator: UsersValidator,
+      },
+    },
+    {
+      plugin: authentications,
+      options: {
+        authenticationsService,
+        usersService,
+        tokenManager: TokenManager,
+        validator: AuthenticationsValidator,
+      },
+    },
+    {
+      plugin: playlists,
+      options: {
+        service: playlistsService,
+        validator: PlaylistsValidator,
+      },
+    },
+    {
+      plugin: playlistSongs,
+      options: {
+        playlistSongsService,
+        playlistsService,
+        validator: PlaylistSongsValidator,
+      },
+    },
+  ]);
 
-    await server.start();
-    console.log(`server berjalan pada ${server.info.uri}`);
+  await server.start();
+  console.log(`Server berjalan pada ${server.info.uri}`);
 };
 
 init();
