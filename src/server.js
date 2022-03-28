@@ -3,6 +3,9 @@ require('dotenv').config();
 const Hapi = require('@hapi/hapi');
 const Jwt = require('@hapi/jwt');
 
+// error
+const ClientError = require('./exceptions/ClientError');
+
 // Albums
 const albums = require('./api/albums');
 const AlbumsService = require('./service/postgres/AlbumsService');
@@ -122,6 +125,30 @@ const init = async () => {
       },
     },
   ]);
+  
+  server.ext('onPreResponse', (request, h) => {
+    // mendapatkan konteks response dari request
+    const { response } = request;
+    if (response instanceof ClientError) {
+      // membuat response baru dari response toolkit sesuai kebutuhan error handling
+  
+      const newResponse = h.response({
+  
+        status: 'fail',
+  
+        message: response.message,
+  
+      });
+  
+      newResponse.code(response.statusCode);
+  
+      return newResponse;
+    }
+  
+    // jika bukan ClientError, lanjutkan dengan response sebelumnya (tanpa terintervensi)
+  
+    return response.continue || response;
+  });
 
   await server.start();
   console.log(`Server berjalan pada ${server.info.uri}`);
