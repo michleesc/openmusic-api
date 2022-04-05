@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "start-dev-api": "nodemon ./src_api/server.js",
-    "start-dev-consumer": "nodemon ./src_consumer/consumer.js",
     "lint": "eslint ./src",
     "migrate": "node-pg-migrate"
   },
