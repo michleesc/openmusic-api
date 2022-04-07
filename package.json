@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start-dev": "nodemon ./src_api/server.js",
-    "lint": "eslint ./src",
+    "lint": "eslint ./src_api",
     "migrate": "node-pg-migrate"
   },
   "keywords": [],
