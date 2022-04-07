@@ -48,20 +48,16 @@ class AlbumLikesService {
     
         const result = await this._pool.query(query);
     
-        if (!result.rows.length) {
-          return false;
-        }
-        return true;
+        return result.rows.length;
       }
-    
+
       async getLikesCount(albumId) {
         try {
           const result = await this._cacheService.get(`album_likes:${albumId}`);
-          const like = {
+          return {
             count: JSON.parse(result),
             source: 'cache',
           };
-          return like;
         } catch (error) {
           const query = {
             text: 'SELECT * FROM user_album_likes WHERE album_id = $1',
@@ -75,12 +71,11 @@ class AlbumLikesService {
     
           await this._cacheService.set(`album_likes:${albumId}`, JSON.stringify(result.rows.length));
     
-          const like = {
+          return {
             count: result.rows.length,
             source: 'db',
         };
-          return like;
-        }
+      }
     }
 }
 module.exports = AlbumLikesService;
